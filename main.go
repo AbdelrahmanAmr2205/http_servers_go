@@ -1,0 +1,62 @@
+package main
+
+import (
+	"database/sql"
+	"log"
+	"net/http"
+	"os"
+	"sync/atomic"
+
+	"github.com/AbdelrahmanAmr2205/http_servers_go/internal/database"
+	"github.com/joho/godotenv"
+	_ "github.com/lib/pq"
+)
+
+type apiConfig struct {
+	fileServerHits atomic.Int32
+	db             *database.Queries
+	platform       string
+}
+
+func main() {
+	err := godotenv.Load()
+	if err != nil {
+		log.Fatal("couldn't load environment variables:", err)
+	}
+
+	dbURL := os.Getenv("DB_URL")
+	platform := os.Getenv("PLATFORM")
+	if dbURL == "" {
+		log.Fatal("DB_URL must be set")
+	}
+	if platform == "" {
+		log.Fatal("PLATFORM must be set")
+	}
+
+	db, err := sql.Open("postgres", dbURL)
+
+	const filepathRoot = "."
+	const port = "8080"
+
+	cfg := &apiConfig{db: database.New(db), platform: platform}
+
+	sMux := http.NewServeMux()
+	f := http.StripPrefix("/app", http.FileServer(http.Dir(filepathRoot)))
+	sMux.Handle("GET /app/", cfg.middlewareMetricsInc(f))
+	sMux.HandleFunc("GET /api/healthz", handleHealthz)
+	sMux.HandleFunc("GET /admin/metrics", cfg.handlerMetrics)
+	sMux.HandleFunc("POST /admin/reset", cfg.handlerReset)
+	sMux.HandleFunc("POST /api/users", cfg.handlerCreateUser)
+	sMux.HandleFunc("POST /api/chirps", cfg.handlerCreateChirp)
+	sMux.HandleFunc("GET /api/chirps", cfg.getAllChirps)
+	sMux.HandleFunc("GET /api/chirps/{id}", cfg.getChirp)
+	sMux.HandleFunc("POST /api/login", cfg.handlerLogin)
+
+	srv := &http.Server{
+		Addr:    ":" + port,
+		Handler: sMux,
+	}
+
+	log.Printf("Serving files from %s on port: %s\n", filepathRoot, port)
+	log.Fatal(srv.ListenAndServe())
+}
