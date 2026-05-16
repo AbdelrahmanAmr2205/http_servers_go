@@ -1,6 +1,7 @@
 package auth
 
 import (
+	"net/http"
 	"testing"
 	"time"
 
@@ -112,10 +113,46 @@ func TestCheckPasswordHash(t *testing.T) {
 		t.Run(name, func(t *testing.T) {
 			match, err := CheckPasswordHash(tc.password, tc.hash)
 			if (err != nil) != tc.expectErr {
-				t.Errorf("CheckPasswordHash() error = %v, wantErr %v", err, tc.expectErr)
+				t.Errorf("CheckPasswordHash() error = %v, expectErr %v", err, tc.expectErr)
 			}
 			if !tc.expectErr && match != tc.matchPassword {
 				t.Errorf("CheckPasswordHash() expects %v, got %v", tc.matchPassword, match)
+			}
+		})
+	}
+}
+
+func TestGetBearerToken(t *testing.T) {
+	tests := map[string]struct {
+		headers   http.Header
+		want      string
+		expectErr bool
+	}{
+		"valid_case": {
+			headers:   http.Header{"Authorization": []string{"Bearer token"}},
+			want:      "token",
+			expectErr: false,
+		},
+		"missing_header": {
+			headers:   http.Header{},
+			want:      "",
+			expectErr: true,
+		},
+		"malformed_header": {
+			headers:   http.Header{"Authorization": []string{"token"}},
+			want:      "",
+			expectErr: true,
+		},
+	}
+
+	for name, tc := range tests {
+		t.Run(name, func(t *testing.T) {
+			got, err := GetBearerToken(tc.headers)
+			if (err != nil) != tc.expectErr {
+				t.Errorf("CheckPasswordHash() error = %v, expectErr %v", err, tc.expectErr)
+			}
+			if !tc.expectErr && tc.want != got {
+				t.Errorf("CheckPasswordHash() expects %v, got %v", tc.want, got)
 			}
 		})
 	}
