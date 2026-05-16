@@ -63,3 +63,60 @@ func TestJWT(t *testing.T) {
 		})
 	}
 }
+
+func TestCheckPasswordHash(t *testing.T) {
+	password1 := "password1"
+	password2 := "password2"
+	hash1, _ := HashPassword(password1)
+	hash2, _ := HashPassword(password2)
+
+	tests := map[string]struct {
+		password      string
+		hash          string
+		expectErr     bool
+		matchPassword bool
+	}{
+		"correct_password": {
+			password:      password1,
+			hash:          hash1,
+			expectErr:     false,
+			matchPassword: true,
+		},
+		"incorrect_password": {
+			password:      password1,
+			hash:          hash2,
+			expectErr:     false,
+			matchPassword: false,
+		},
+		"empty_password": {
+			password:      "",
+			hash:          hash1,
+			expectErr:     false,
+			matchPassword: false,
+		},
+		"Not_hashed": {
+			password:      password1,
+			hash:          password1,
+			expectErr:     true,
+			matchPassword: false,
+		},
+		"invalid_hash": {
+			password:      password1,
+			hash:          "invalid_hash",
+			expectErr:     true,
+			matchPassword: false,
+		},
+	}
+
+	for name, tc := range tests {
+		t.Run(name, func(t *testing.T) {
+			match, err := CheckPasswordHash(tc.password, tc.hash)
+			if (err != nil) != tc.expectErr {
+				t.Errorf("CheckPasswordHash() error = %v, wantErr %v", err, tc.expectErr)
+			}
+			if !tc.expectErr && match != tc.matchPassword {
+				t.Errorf("CheckPasswordHash() expects %v, got %v", tc.matchPassword, match)
+			}
+		})
+	}
+}
