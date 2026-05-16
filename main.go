@@ -16,6 +16,7 @@ type apiConfig struct {
 	fileServerHits atomic.Int32
 	db             *database.Queries
 	platform       string
+	secretKey      string
 }
 
 func main() {
@@ -26,11 +27,15 @@ func main() {
 
 	dbURL := os.Getenv("DB_URL")
 	platform := os.Getenv("PLATFORM")
+	secretKey := os.Getenv("SECRET_KEY")
 	if dbURL == "" {
 		log.Fatal("DB_URL must be set")
 	}
 	if platform == "" {
 		log.Fatal("PLATFORM must be set")
+	}
+	if secretKey == "" {
+		log.Fatal("SECRET_KEY must be set")
 	}
 
 	db, err := sql.Open("postgres", dbURL)
@@ -38,7 +43,7 @@ func main() {
 	const filepathRoot = "."
 	const port = "8080"
 
-	cfg := &apiConfig{db: database.New(db), platform: platform}
+	cfg := &apiConfig{db: database.New(db), platform: platform, secretKey: secretKey}
 
 	sMux := http.NewServeMux()
 	f := http.StripPrefix("/app", http.FileServer(http.Dir(filepathRoot)))
