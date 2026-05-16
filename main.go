@@ -52,7 +52,7 @@ func main() {
 	sMux.HandleFunc("GET /admin/metrics", cfg.handlerMetrics)
 	sMux.HandleFunc("POST /admin/reset", cfg.handlerReset)
 	sMux.HandleFunc("POST /api/users", cfg.handlerCreateUser)
-	sMux.HandleFunc("POST /api/chirps", cfg.handlerCreateChirp)
+	sMux.Handle("POST /api/chirps", cfg.middlewareAuth(cfg.handlerCreateChirp))
 	sMux.HandleFunc("GET /api/chirps", cfg.getAllChirps)
 	sMux.HandleFunc("GET /api/chirps/{id}", cfg.getChirp)
 	sMux.HandleFunc("POST /api/login", cfg.handlerLogin)

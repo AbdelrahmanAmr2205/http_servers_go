@@ -5,13 +5,6 @@ import (
 	"net/http"
 )
 
-func (cfg *apiConfig) middlewareMetricsInc(next http.Handler) http.Handler {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		cfg.fileServerHits.Add(1)
-		next.ServeHTTP(w, r)
-	})
-}
-
 func (cfg *apiConfig) handlerMetrics(w http.ResponseWriter, _ *http.Request) {
 	w.Header().Add("Content-Type", "text/html")
 	content := fmt.Sprintf(`

@@ -13,8 +13,7 @@ import (
 
 func (cfg *apiConfig) handlerCreateChirp(w http.ResponseWriter, r *http.Request) {
 	type parameters struct {
-		Body   string    `json:"body"`
-		UserId uuid.UUID `json:"user_id"`
+		Body string `json:"body"`
 	}
 	type returnVals struct {
 		ID        uuid.UUID `json:"id"`
@@ -38,7 +37,7 @@ func (cfg *apiConfig) handlerCreateChirp(w http.ResponseWriter, r *http.Request)
 	}
 
 	chirp, err := cfg.db.CreateChirp(r.Context(), database.CreateChirpParams{
-		UserID: params.UserId,
+		UserID: r.Context().Value(UserIdKey).(uuid.UUID),
 		Body:   params.Body,
 	})
 	if err != nil {
