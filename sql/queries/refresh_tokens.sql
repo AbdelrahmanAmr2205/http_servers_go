@@ -8,3 +8,7 @@ VALUES (
     now() + interval '60 days',
     $2
 ) RETURNING *;
+
+-- name: GetRefreshToken :one
+SELECT * FROM refresh_tokens
+WHERE token = $1;

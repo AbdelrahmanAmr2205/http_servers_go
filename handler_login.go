@@ -50,7 +50,6 @@ func (cfg *apiConfig) handlerLogin(w http.ResponseWriter, r *http.Request) {
 			respondWithError(w, http.StatusInternalServerError, err.Error(), err)
 			return
 		}
-
 	}
 
 	valid, err := auth.CheckPasswordHash(strings.TrimSpace(params.Password), user.HashedPassword)
