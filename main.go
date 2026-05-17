@@ -57,6 +57,7 @@ func main() {
 	sMux.HandleFunc("GET /api/chirps/{id}", cfg.getChirp)
 	sMux.HandleFunc("POST /api/login", cfg.handlerLogin)
 	sMux.HandleFunc("POST /api/refresh", cfg.handlerRefresh)
+	sMux.HandleFunc("POST /api/revoke", cfg.handlerRevoke)
 
 	srv := &http.Server{
 		Addr:    ":" + port,
