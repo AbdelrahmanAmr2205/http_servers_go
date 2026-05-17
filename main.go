@@ -58,6 +58,7 @@ func main() {
 	sMux.HandleFunc("POST /api/login", cfg.handlerLogin)
 	sMux.HandleFunc("POST /api/refresh", cfg.handlerRefresh)
 	sMux.HandleFunc("POST /api/revoke", cfg.handlerRevoke)
+	sMux.Handle("PUT /api/users", cfg.middlewareAuth(cfg.handlerEditUser))
 
 	srv := &http.Server{
 		Addr:    ":" + port,
