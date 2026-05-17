@@ -1,6 +1,6 @@
 -- +goose Up
 CREATE TABLE refresh_tokens (
-    token CHAR(32) PRIMARY KEY,
+    token CHAR(64) PRIMARY KEY,
     created_at TIMESTAMP NOT NULL,
     updated_at TIMESTAMP NOT NULL,
     revoked_at TIMESTAMP NULL,
@@ -9,5 +9,4 @@ CREATE TABLE refresh_tokens (
 );
 
 -- +goose Down
-DROP -- Drop an existing table 'refresh_tokens'
 DROP TABLE refresh_tokens;
