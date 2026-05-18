@@ -60,6 +60,7 @@ func main() {
 	sMux.HandleFunc("POST /api/revoke", cfg.handlerRevoke)
 	sMux.Handle("PUT /api/users", cfg.middlewareAuth(cfg.handlerEditUser))
 	sMux.Handle("DELETE /api/chirps/{id}", cfg.middlewareAuth(cfg.handlerDeleteChirp))
+	sMux.HandleFunc("POST /api/polka/webhooks", cfg.handlerUpgradeChirpyRed)
 
 	srv := &http.Server{
 		Addr:    ":" + port,
