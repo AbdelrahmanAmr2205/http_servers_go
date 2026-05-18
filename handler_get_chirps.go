@@ -2,6 +2,7 @@ package main
 
 import (
 	"net/http"
+	"sort"
 	"strings"
 	"time"
 
@@ -43,8 +44,14 @@ func (cfg *apiConfig) getAllChirps(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	res := []returnVals{}
+	sortingMethod := r.URL.Query().Get("sort")
+	if sortingMethod == "desc" {
+		sort.Slice(chirps, func(i, j int) bool {
+			return chirps[i].CreatedAt.After(chirps[j].CreatedAt)
+		})
+	}
 
+	res := []returnVals{}
 	for _, chirp := range chirps {
 		res = append(res, returnVals{
 			ID:        chirp.ID,
