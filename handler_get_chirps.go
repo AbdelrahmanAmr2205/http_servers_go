@@ -5,6 +5,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/AbdelrahmanAmr2205/http_servers_go/internal/database"
 	"github.com/google/uuid"
 )
 
@@ -17,10 +18,29 @@ func (cfg *apiConfig) getAllChirps(w http.ResponseWriter, r *http.Request) {
 		UserID    uuid.UUID `json:"user_id"`
 	}
 
-	chirps, err := cfg.db.GetAllChirps(r.Context())
-	if err != nil {
-		respondWithError(w, http.StatusInternalServerError, "couldn't fetch chirps", err)
-		return
+	chirps := []database.Chirp{}
+
+	authorIdString := r.URL.Query().Get("author_id")
+
+	if authorIdString == "" {
+		var err error
+		chirps, err = cfg.db.GetAllChirps(r.Context())
+		if err != nil {
+			respondWithError(w, http.StatusInternalServerError, "couldn't fetch chirps", err)
+			return
+		}
+	} else {
+		authorID, err := uuid.Parse(authorIdString)
+		if err != nil {
+			respondWithError(w, http.StatusBadRequest, err.Error(), err)
+			return
+		}
+
+		chirps, err = cfg.db.GetChirpsByAuthorID(r.Context(), authorID)
+		if err != nil {
+			respondWithError(w, http.StatusInternalServerError, "couldn't fetch chirps", err)
+			return
+		}
 	}
 
 	res := []returnVals{}
