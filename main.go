@@ -59,6 +59,7 @@ func main() {
 	sMux.HandleFunc("POST /api/refresh", cfg.handlerRefresh)
 	sMux.HandleFunc("POST /api/revoke", cfg.handlerRevoke)
 	sMux.Handle("PUT /api/users", cfg.middlewareAuth(cfg.handlerEditUser))
+	sMux.Handle("DELETE /api/chirps/{id}", cfg.middlewareAuth(cfg.handlerDeleteChirp))
 
 	srv := &http.Server{
 		Addr:    ":" + port,
