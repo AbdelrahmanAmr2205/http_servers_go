@@ -1,10 +1,10 @@
-# Chirpy 🐦 - Go HTTP Server
+# Chirpy - Go HTTP Server
 
 A RESTful API backend for a Twitter-like application called "Chirpy", built as a guided project for the [Boot.dev](https://boot.dev) backend curriculum.
 
 This project demonstrates how to build a robust, production-ready HTTP server in Go using the standard library (specifically leveraging Go 1.22+ routing features), PostgreSQL for data persistence, and custom middleware for authentication and metrics.
 
-## 🚀 Features
+## Features
 
 * **RESTful API**: Standardized endpoints for creating and managing users and "chirps" (messages).
 * **Authentication & Authorization**:
